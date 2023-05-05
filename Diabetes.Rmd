@@ -1,0 +1,126 @@
+---
+title: "DV_Asmt3"
+author: "Riya Aggarwal"
+date: "07/12/2022"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+dataset <-read.csv("/Users/riya/Desktop/diabetes.csv")
+head(dataset)
+```
+
+# Statistical Analysis
+
+```{r}
+summary(dataset)
+```
+The statistical analysis shows that the patients observed are between the age range of 21 years to 81 years. It is observed that the glucose levels range from 50 to 200, with 120 being the mean glucose level in patients. Insulin levels range from 0 to 846 with 79.8 being the mean insulin level in patients
+
+# Visualizing Stats
+
+## Histograms
+
+## Histogram of Glucose level with mean Glucose level
+
+```{r}
+hist(dataset$Glucose, main="Histogram of Glucose with mean glucose level", xlab = "Glucose", ylab = "Value")
+abline(v=mean(dataset$Glucose), col="red")
+```
+
+
+## Histogram of Insulin Level with mean Insulin
+
+```{r}
+hist(dataset$Insulin, main="Histogram of Insulin with mean Insulin level", xlab = "Glucose", ylab = "Value")
+abline(v=mean(dataset$Insulin), col="red")
+```
+
+
+## Boxplot for Age
+
+```{r}
+boxplot(dataset$Age, ylab = "Age", main = "Boxplot for Age")
+```
+
+
+## Boxplot for blood pressure
+
+```{r}
+boxplot(dataset$BloodPressure, ylab = "Blood Pressure", main = "Boxplot for Blood Pressure")
+```
+
+# Multivariate Analysis
+
+
+## Pair Plot
+
+```{r}
+data<- data.frame( dataset$Glucose, dataset$BloodPressure, dataset$Insulin, dataset$SkinThickness,dataset$BMI, dataset$Age)
+pairs(data, main="Pairplot of the important variables")
+```
+## Heatmap
+
+```{r}
+
+#Creating a subset of all the numerical attributes
+a <- subset(dataset, select = c(1:9))
+#Doing a cor and round to make correlations
+cormat <- round(cor(a),2)
+#importing library
+library(reshape2)
+#reshaping for heatmap
+melted_cormat <- melt(cormat)
+#Plotting a heatmap using ggplot2
+library(ggplot2)
+ggplot(data = melted_cormat, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile() + xlab("Diabetes Variables") + ylab("Diabetes Variables") + 
+  ggtitle("Correlation Heatmap for Diabetes") + theme(axis.text.x = element_text(angle = 90))
+
+```
+
+## Scatterplots
+
+```{r}
+#scatter plot between Age and Glucose Level
+base1 <- ggplot(dataset, aes(x= dataset$Age, y = dataset$Glucose))
+base1 + geom_point(aes(color = dataset$Outcome)) + xlab("Age") + ylab("Glucose Level") + 
+  ggtitle("Blood Glucose level with Age")
+```
+```{r}
+#scatter plot between Insulin and BMI
+base1 <- ggplot(dataset, aes(x= dataset$BMI, y = dataset$Insulin))
+base1 + geom_point(aes(color = dataset$Outcome)) + xlab("BMI") + ylab("Insulin Level") + 
+  ggtitle("Blood Insulin level with BMI")
+```
+```{r}
+#scatter plot between BMI and Insulin level
+base1 + geom_point(aes(color = dataset$Outcome)) + xlab("BMI") + ylab("Insulin") + 
+  ggtitle("BMI with Insulin levels") + geom_smooth(aes(colour = dataset$Insulin))
+```
+
+## Violin Plot
+```{r}
+#Violin plots of Relation between number of pregnancies and having Diabetes
+base5 <- ggplot(dataset, aes(y = dataset$Outcome))
+base5 + geom_violin(aes(fill = dataset$Pregnancies, x=dataset$Pregnancies)) +
+  facet_wrap(~dataset$Pregnancies) + xlab("Pregnancies") + ylab("Insulin level") + 
+  ggtitle("Relation between number of pregnancies and having Diabetes")
+
+```
+
+# Conclusion
+
+The analysis involved collecting healthcare industry data related to diabetic patients. The dataset collected from Kaggle contains 10 attributes of diabetic patients like pregnancy, Blood Glucose level, Blood insulin level, Blood pressure, Skin Thickness, Age and BMI. The outcome column contains 1 or 0 depending if the patient has diabetes or not. The patients observed are between the age range of 21 years to 81 years. Upon doing statistical analysis it is observed that the glucose levels range from 50 to 200, with 120 being the mean glucose level in patients. Insulin levels range from 0 to 846 with 79.8 being the mean insulin level in patients. Boxplots are chosen because they represent a lot of statistical information in a single visualization. They can easily represent the median, quartiles, and also show the presence of outliers. Boxplots for Age and Blood Pressure are made. The median Age is 29, while there are also a few outliers with Age above 65. The emdian blood pressure is 72 with some outliers being less than 40 and more than 110, but for most of teh patients blood pressure lies between 60-80.  
+
+A pair plot is created for variables- Glucose, Blood Pressure, Insulin, Skin thickness, BMI and Age. Their relation with each of the variables is plotted against each other. The variables do not show a strong correlation with each other. Insulin shows slight positive correlation with Skin thickness and BMI, and very mild positive correlation with Blood Pressure. Skin Thickness and BMI show a positive correlation. The pair plot is a bit difficult to look at for conclusions, so a correlation heatmap is also created among all variables to understand correlation between them properly. The correlation matrix plots all the variables of the dataset against each other, and uses a colour gradient to represent the extent of correlation between any two variables. The darker blue represents less correlation, and light blue represents strong correlation. While the heatmap approves of the findings from the pair plot, it also throws light to some new observations. It shows that the outcome of weather a patient is diabetic or not depends on their Glucose Level, BMI and number of pregnancies. Also, Skin thickness is correlated with BMI and Insulin level. Insulin and Glucose level also show a slightly positive correlation. 
+
+Further, scatter plots are made among multiple variables, while also taking the outcome in account. Blood Glucose level with Age is plotted in the first scatterplot. Colour segregation based on their outcome of having diabetes or not is also made. Light Blue means that they have diabetes, while dark blue means patient does not have diabetes. It can be seen that mostly the young patients who also do not have diabetes have their glucose level between 60 to 140, while patients with diabetes have glucose levels till 200. The second scatter plot is made between insulin Level and BMI, with outcome showing different colours. It can be concluded from the scatter plot that the patients having diabetes had BMI between 30 to 60, with insulin levels mostly between 150 to 400. 
+
+Violin plot is made to understand the relation of number of pregnancies to having diabetes. The more the width of violin, means more risk of diabetes in that case. It can be observed that more number of pregnancies have wider violin and hence means that with more pregnancies, the risk of diabetes also increases. 
+
